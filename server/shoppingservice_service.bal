@@ -18,11 +18,17 @@ service "ShoppingService" on ep {
         return response;
     }
 
-    remote function RemoveProduct(ProductId value) returns ProductList|error {
-        log:printInfo("Product removed: " + value.sku);
-        ProductList productList = {products: []};
-        return productList;
+   isolated remote function RemoveProduct(ProductId value) returns ProductList|error {
+    lock {
+        _ = products.remove(value.sku);
     }
+    ProductList productList;
+    lock {
+        productList = {products: products.clone().toArray()};
+    }
+    return productList;
+}
+
 
     remote function ListAvailableProducts(Empty value) returns ProductList|error {
         ProductList productList = {products: []};
