@@ -36,8 +36,20 @@ service "ShoppingService" on ep {
     }
 
     remote function SearchProduct(ProductId value) returns ProductResponse|error {
-        ProductResponse response = {message: "Product found", product: {name: "Sample", description: "Sample product", price: 10.0, stock_quantity: 100, sku: value.sku, status: "available"}};
-        return response;
+        Product? foundProduct;
+
+        lock {
+            foundProduct = products.get(value.sku).clone();
+        }
+
+        if foundProduct is Product {
+            ProductResponse response={
+                message: "Product found",
+                product: foundProduct
+            };
+            return response;
+        }
+        return error("Product does not exist");
     }
 
     remote function AddToCart(CartRequest value) returns CartResponse|error {
