@@ -26,6 +26,16 @@ service / on ep0 {
         return <http:NoContent>{};
     }
 
+# Retrieve all programmes
+    #
+    # + return - A list of programmes. 
+    resource function get programmes() returns Programme[]|http:NotFound {
+        Programme[] prog = programme.toArray();
+        if prog.length() == 0 {
+            return <http:NotFound>{body: "Programme not found"};
+        }
+        return prog;
+    }
 
     # Retrieve a specific programme
     #
@@ -55,7 +65,16 @@ service / on ep0 {
         return prog;
     }
 
-
+# Retrieve programmes due for review
+    #
+    # + return - A list of programmes due for review. 
+    resource function get programmes/review() returns Programme[]|http:NotFound {
+        Programme[] prog = programme.toArray();
+        if prog.length() == 0 {
+            return <http:NotFound>{body: "Programme review not found"};
+        }
+        return prog;
+    }
 
     # Add a new programme
     #
@@ -63,6 +82,12 @@ service / on ep0 {
     # http:Created (Programme created successfully.)
     # http:BadRequest (Invalid input.)
     resource function post programmes(@http:Payload Programme payload) returns http:Created|http:BadRequest {
+if (payload.programmeCode is () || payload.nqfLevel is () || payload.faculty is () || payload.department is () || payload.title is () || payload.registrationDate is () || payload.courses is ()) {
+            return <http:BadRequest>{body: "All fields (id, name, age, course) are required"};
+        }
+
+        programme[payload.programmeCode.toString()] = payload;
+        return <http:Created>{body: "Programme created successfully", headers: {"Location": "/Programme/" + payload.programmeCode.toString()}};
     }
 
     # Update an existing programme
@@ -73,5 +98,24 @@ service / on ep0 {
     # http:BadRequest (Invalid input.)
     # http:NotFound (Programme not found.)
     resource function put programmes/[string programmeCode](@http:Payload Programme payload) returns http:Ok|http:BadRequest|http:NotFound {
+Programme? prog = programme[programmeCode.toString()];
+        if prog is () {
+            return <http:NotFound>{body: "Programme not found"};
+        }
+
+        if (payload.programmeCode is () || payload.nqfLevel is () || payload.faculty is () || payload.department is () || payload.title is () || payload.registrationDate is () || payload.courses is ()) {
+            return <http:BadRequest>{body: "All fields (id, name, age, course) are required"};
+        }
+
+        prog.nqfLevel = payload.nqfLevel;
+        prog.faculty = payload.faculty;
+        prog.department = payload.department;
+        prog.title = payload.title;
+        prog.registrationDate = payload.registrationDate;
+        prog.courses = payload.courses;
+        programme[programmeCode.toString()] = prog;
+
+        return <http:Ok>{body: "Programme updated successfully"};
+    }
     }
 }
