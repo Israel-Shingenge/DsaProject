@@ -83,41 +83,24 @@ function handleOption(string option) returns error? {
     io:println(addProductResponse);
 }
 
-function updateProduct() returns error? {
-    io:println("Enter product SKU to update: ");
-    string updateSku = io:readln();
-    io:println("Enter new product name: ");
-    string updateName = io:readln();
-    io:println("Enter new product description: ");
-    string updateDescription = io:readln();
-    io:println("Enter new product price: ");
-    float updatePrice = check readFloat();
-    io:println("Enter new product stock quantity: ");
-    int updateStockQuantity = check readInt();
-    io:println("Enter new product status: ");
-    string updateStatus = io:readln();
-
-    Product updateProductRequest = {name: updateName, description: updateDescription, price: updatePrice, stock_quantity: updateStockQuantity, sku: updateSku, status: updateStatus};
-    ProductResponse updateProductResponse = check ep->UpdateProduct(updateProductRequest);
-    io:println(updateProductResponse);
+function readFloat() returns float|error {
+    string input = io:readln();
+    return float:fromString(input);
 }
-function createUsers() returns error? {
-    io:println("Enter user ID: ");
-    string userId = io:readln();
-    io:println("Enter user type (admin/customer): ");
-    string userType = io:readln();
-
-    if userType != "admin" && userType != "customer" {
-        return error("Invalid user type. Must be 'admin' or 'customer'.");
-    }
-
-    User createUsersRequest = {user_id: userId, user_type: userType};
-    CreateUsersStreamingClient createUsersStreamingClient = check ep->CreateUsers();
-    check createUsersStreamingClient->sendUser(createUsersRequest);
-    check createUsersStreamingClient->complete();
-    UserResponse? createUsersResponse = check createUsersStreamingClient->receiveUserResponse();
-    io:println(createUsersResponse);
+function readInt() returns int|error {
+    string input = io:readln();
+    return int:fromString(input);
 }
+
+function removeProduct() returns error? {
+    io:println("Enter product SKU to remove: ");
+    string removeSku = io:readln();
+
+    ProductId removeProductRequest = {sku: removeSku};
+    ProductList removeProductResponse = check ep->RemoveProduct(removeProductRequest);
+    io:println(removeProductResponse);
+}
+
 
 
     Empty listAvailableProductsRequest = {};
