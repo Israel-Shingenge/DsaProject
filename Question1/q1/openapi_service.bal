@@ -18,8 +18,17 @@ service / on ep0 {
     # Retrieve all programmes
     #
     # + return - A list of programmes. 
-    resource function get programmes() returns Programme[] {
+    resource function delete programmes/[string programmeCode]() returns http:NoContent|http:NotFound {
+        Programme? prog = programme[programmeCode.toString()];
+
+        if prog is () {
+            return <http:NotFound>{body: "Programme not found"};
+        }
+
+        _ = programme.remove(programmeCode.toString());
+        return <http:NoContent>{};
     }
+
 
     # Retrieve a specific programme
     #
