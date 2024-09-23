@@ -22,13 +22,19 @@ service / on ep0 {
     }
 
     # Retrieve a specific programme
-    #
-    # + programmeCode - Unique identifier for the programme.
-    # + return - returns can be any of following types 
-    # http:Ok (Programme details.)
-    # http:NotFound (Programme not found.)
-    resource function get programmes/[string programmeCode]() returns Programme|http:NotFound {
-    }
+    #
+    # + programmeCode - Unique identifier for the programme.
+    # + return - returns can be any of following types 
+    # http:Ok (Programme details.)
+    # http:NotFound (Programme not found.)
+    resource function get programmes/[string programmeCode]() returns Programme|http:NotFound {
+        Programme? prog = programme[programmeCode.toString()];
+        if prog is (){
+            return <http:NotFound>{body:"Programme not found"};
+        }
+        return prog;
+    }
+
 
     # Retrieve programmes by faculty
     #
