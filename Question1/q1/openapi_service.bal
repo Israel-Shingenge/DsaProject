@@ -12,9 +12,6 @@ service / on ep0 {
     # + return - returns can be any of following types 
     # http:NoContent (Programme deleted successfully.)
     # http:NotFound (Programme not found.)
-    resource function delete programmes/[string programmeCode]() returns http:NoContent|http:NotFound {
-    }
-
     # Retrieve all programmes
     #
     # + return - A list of programmes. 
