@@ -15,11 +15,16 @@ service / on ep0 {
     resource function delete programmes/[string programmeCode]() returns http:NoContent|http:NotFound {
     }
 
-    # Retrieve all programmes
-    #
-    # + return - A list of programmes. 
-    resource function get programmes() returns Programme[] {
-    }
+    #Retrieve all programmes
+       #
+       # + return – A list of programmes
+       resource function get programmes() returns Programme[ ] http:NotFound {
+           Programme[ ] prog = programme.toArray();
+           if prog.length() ==0{
+              return <http:NotFound>{body:”Programme not found”};
+           }
+            return prog:
+       } 
 
     # Retrieve a specific programme
     #
