@@ -102,4 +102,16 @@ isolated remote function UpdateProduct(Product value) returns ProductResponse|er
     ProductResponse response = {message: "Product updated successfully", product: value};
     return response;
 }
+remote function ListAvailableProducts(Empty value) returns ProductList|error {
+    Product[] productsList = [];
+
+    lock {
+        Product[] allProducts = products.clone().toArray();
+        // Iterate through the copied products
+        foreach var item in allProducts {
+            if item.status == "AVAILABLE" {
+                productsList.clone().push(item);
+            }
+        }
+    }
 
