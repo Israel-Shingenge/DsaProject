@@ -3,6 +3,23 @@ import ballerina/log;
 
 listener grpc:Listener ep = new (9090);
 
+isolated table<Product> key(sku) products = table [
+    {name: "Gloves", description: "They go on your hands", price: 1000.0, status: "AVAILABLE", stock_quantity: 10, sku: "1234"}
+];
+
+public table<User> key(user_type) users = table [
+    {user_id: "1", user_type: "customer"}
+];
+
+public table<CartRequest> key(sku) cartRequests = table [
+    {user_id: "1", sku: "1234-8728-2092"}
+];
+
+public table<UserId> key(user_id) user_id = table [
+    {user_id: "1"}
+];
+
+
 @grpc:Descriptor {value: SIMPLE_DESC}
 service "ShoppingService" on ep {
 
