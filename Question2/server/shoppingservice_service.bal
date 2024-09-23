@@ -75,15 +75,13 @@ service "ShoppingService" on ep {
         return response;
     }
 
-    remote function PlaceOrder(UserId value) returns OrderResponse|error {
-        log:printInfo("Order placed by user: " + value.user_id);
-        OrderResponse response = {message: "Order placed successfully"};
-        return response;
-    }
-
-    remote function CreateUsers(stream<User, grpc:Error?> clientStream) returns UserResponse|error {
-        UserResponse response = {message: "Users created successfully"};
-        return response;
-    }
+   remote function PlaceOrder(UserId value) returns OrderResponse|error {
+    log:printInfo("Order placed by user: " + value.user_id);
+    OrderResponse response = {message: "Order placed successfully"};
+    return response;
 }
 
+remote function CreateUsers(stream<User, grpc:Error?> clientStream) returns UserResponse|error {
+    UserResponse response = {message: "Users created successfully"};
+    return response;
+}
