@@ -132,4 +132,22 @@ function listAvailableProducts() returns error? {
     UserResponse? createUsersResponse = check createUsersStreamingClient->receiveUserResponse();
     io:println(createUsersResponse);
 }
+function addToCart() returns error? {
+io:println(&quot;Enter user ID: &quot;);
+string userId = io:readln();
+io:println(&quot;Enter product SKU to add to cart: &quot;);
+string cartSku = io:readln();
+CartRequest addToCartRequest = {user_id: userId, sku: cartSku};
+CartResponse addToCartResponse = check ep-&gt;AddToCart(addToCartRequest);
+io:println(addToCartResponse);
 
+}
+
+function placeOrder() returns error? {
+io:println(&quot;Enter user ID: &quot;);
+string placeOrderUserId = io:readln();
+UserId placeOrderRequest = {user_id: placeOrderUserId};
+io:println(&quot;Order placed successfully&quot;);
+OrderResponse placeOrderResponse = check ep-&gt;PlaceOrder(placeOrderRequest);
+io:println(placeOrderResponse);
+}
