@@ -101,10 +101,14 @@ function updateProduct() returns error? {
     ProductResponse updateProductResponse = check ep->UpdateProduct(updateProductRequest);
     io:println(updateProductResponse);
 }
-
-    ProductId removeProductRequest = {sku: sku};
-    ProductList removeProductResponse = check ep->RemoveProduct(removeProductRequest);
-    io:println(removeProductResponse);
+function readFloat() returns float|error {
+    string input = io:readln();
+    return float:fromString(input);
+}
+function readInt() returns int|error {
+    string input = io:readln();
+    return int:fromString(input);
+}
 
     Empty listAvailableProductsRequest = {};
     ProductList listAvailableProductsResponse = check ep->ListAvailableProducts(listAvailableProductsRequest);
