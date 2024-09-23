@@ -101,14 +101,24 @@ function updateProduct() returns error? {
     ProductResponse updateProductResponse = check ep->UpdateProduct(updateProductRequest);
     io:println(updateProductResponse);
 }
-function readFloat() returns float|error {
-    string input = io:readln();
-    return float:fromString(input);
+function createUsers() returns error? {
+    io:println("Enter user ID: ");
+    string userId = io:readln();
+    io:println("Enter user type (admin/customer): ");
+    string userType = io:readln();
+
+    if userType != "admin" && userType != "customer" {
+        return error("Invalid user type. Must be 'admin' or 'customer'.");
+    }
+
+    User createUsersRequest = {user_id: userId, user_type: userType};
+    CreateUsersStreamingClient createUsersStreamingClient = check ep->CreateUsers();
+    check createUsersStreamingClient->sendUser(createUsersRequest);
+    check createUsersStreamingClient->complete();
+    UserResponse? createUsersResponse = check createUsersStreamingClient->receiveUserResponse();
+    io:println(createUsersResponse);
 }
-function readInt() returns int|error {
-    string input = io:readln();
-    return int:fromString(input);
-}
+
 
     Empty listAvailableProductsRequest = {};
     ProductList listAvailableProductsResponse = check ep->ListAvailableProducts(listAvailableProductsRequest);
