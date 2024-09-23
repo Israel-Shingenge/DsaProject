@@ -65,13 +65,42 @@ function handleOption(string option) returns error? {
 
 
 
+    function addProduct() returns error? {
+    io:println("Enter product name: ");
+    string name = io:readln();
+    io:println("Enter product description: ");
+    string description = io:readln();
+    io:println("Enter product price: ");
+    float price = check readFloat();
+    io:println("Enter product stock quantity: ");
+    int stockQuantity = check readInt();
+    io:println("Enter product SKU: ");
+    string sku = io:readln();
+    io:println("Enter product status: ");
+    string status = io:readln();
     Product addProductRequest = {name: name, description: description, price: price, stock_quantity: stockQuantity, sku: sku, status: status};
     ProductResponse addProductResponse = check ep->AddProduct(addProductRequest);
     io:println(addProductResponse);
+}
 
-    Product updateProductRequest = {name: name, description: description, price: price, stock_quantity: stockQuantity, sku: sku, status: status};
+function updateProduct() returns error? {
+    io:println("Enter product SKU to update: ");
+    string updateSku = io:readln();
+    io:println("Enter new product name: ");
+    string updateName = io:readln();
+    io:println("Enter new product description: ");
+    string updateDescription = io:readln();
+    io:println("Enter new product price: ");
+    float updatePrice = check readFloat();
+    io:println("Enter new product stock quantity: ");
+    int updateStockQuantity = check readInt();
+    io:println("Enter new product status: ");
+    string updateStatus = io:readln();
+
+    Product updateProductRequest = {name: updateName, description: updateDescription, price: updatePrice, stock_quantity: updateStockQuantity, sku: updateSku, status: updateStatus};
     ProductResponse updateProductResponse = check ep->UpdateProduct(updateProductRequest);
     io:println(updateProductResponse);
+}
 
     ProductId removeProductRequest = {sku: sku};
     ProductList removeProductResponse = check ep->RemoveProduct(removeProductRequest);
