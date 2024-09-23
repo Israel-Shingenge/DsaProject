@@ -88,7 +88,6 @@ remote function CreateUsers(stream<User, grpc:Error?> clientStream) returns User
 
 isolated remote function AddProduct(Product value) returns ProductResponse|error {
     lock {
-        // Add product using keyed assignment
         products.put(value.clone());
     }
     ProductResponse response = {message: "Product added successfully", product: value};
