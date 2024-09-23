@@ -6,6 +6,7 @@ string currentUserId = "";
 string currentUserType = "";
 
 public function main() returns error? {
+
     boolean repeat = true;
     while repeat {
         io:println("Select user role:");
@@ -37,14 +38,51 @@ public function main() returns error? {
 
         string option = io:readln("Enter a choice to perform: ");
 
-        if option == "9" {
+        if option == "1" && currentUserType == "admin" {
+            error? product = addProduct();
+            if product is error {
+              
+            }
+        } else if option == "2" && currentUserType == "admin" {
+            error? updateProductResult = updateProduct();
+            if updateProductResult is error {
+                
+            }
+        } else if option == "3" && currentUserType == "admin" {
+            error? removeProductResult = removeProduct();
+            if removeProductResult is error {
+               
+            }
+        } else if option == "4" {
+            error? listAvailableProductsResult = listAvailableProducts();
+            if listAvailableProductsResult is error {
+               
+            }
+        } else if option == "5" {
+            error? searchProductResult = searchProduct();
+            if searchProductResult is error {
+               
+            }
+        } else if option == "6" {
+            error? toCart = addToCart();
+            if toCart is error {
+                
+            }
+        } else if option == "7" {
+            error? placeOrderResult = placeOrder();
+            if placeOrderResult is error {
+            
+            }
+        } else if option == "8" && currentUserType == "admin" {
+            error? users = createUsers();
+            if users is error {
+            
+            }
+        } else if option == "9" {
             io:println("Exiting...");
             break; 
         } else {
-            error? err = handleOption(option);
-            if err is error {
-                io:println("Error: ", err.message());
-            }
+            io:println("Only admins are authorized to perform this action.");
         }
 
         if repeat {
@@ -57,15 +95,7 @@ public function main() returns error? {
     }
 }
 
-function handleOption(string option) returns error? {
-    
-    return ();
-}
-
-
-
-
-    function addProduct() returns error? {
+function addProduct() returns error? {
     io:println("Enter product name: ");
     string name = io:readln();
     io:println("Enter product description: ");
@@ -83,10 +113,30 @@ function handleOption(string option) returns error? {
     io:println(addProductResponse);
 }
 
+function updateProduct() returns error? {
+    io:println("Enter product SKU to update: ");
+    string updateSku = io:readln();
+    io:println("Enter new product name: ");
+    string updateName = io:readln();
+    io:println("Enter new product description: ");
+    string updateDescription = io:readln();
+    io:println("Enter new product price: ");
+    float updatePrice = check readFloat();
+    io:println("Enter new product stock quantity: ");
+    int updateStockQuantity = check readInt();
+    io:println("Enter new product status: ");
+    string updateStatus = io:readln();
+
+    Product updateProductRequest = {name: updateName, description: updateDescription, price: updatePrice, stock_quantity: updateStockQuantity, sku: updateSku, status: updateStatus};
+    ProductResponse updateProductResponse = check ep->UpdateProduct(updateProductRequest);
+    io:println(updateProductResponse);
+}
+
 function readFloat() returns float|error {
     string input = io:readln();
     return float:fromString(input);
 }
+
 function readInt() returns int|error {
     string input = io:readln();
     return int:fromString(input);
@@ -101,7 +151,13 @@ function removeProduct() returns error? {
     io:println(removeProductResponse);
 }
 
-    function searchProduct() returns error? {
+function listAvailableProducts() returns error? {
+    Empty listAvailableProductsRequest = {};
+    ProductList listAvailableProductsResponse = check ep->ListAvailableProducts(listAvailableProductsRequest);
+    io:println(listAvailableProductsResponse);
+}
+
+function searchProduct() returns error? {
     io:println("Enter product SKU to search: ");
     string searchSku = io:readln();
 
@@ -110,60 +166,40 @@ function removeProduct() returns error? {
     io:println(searchProductResponse);
 }
 
-function listAvailableProducts() returns error? {
-    Empty listAvailableProductsRequest = {};
-    ProductList listAvailableProductsResponse = check ep->ListAvailableProducts(listAvailableProductsRequest);
-    io:println(listAvailableProductsResponse);
-}
-
-
-    CartRequest addToCartRequest = {user_id: userId, sku: sku};
+function addToCart() returns error? {
+    io:println("Enter user ID: ");
+    string userId = io:readln();
+    io:println("Enter product SKU to add to cart: ");
+    string cartSku = io:readln();
+    CartRequest addToCartRequest = {user_id: userId, sku: cartSku};
     CartResponse addToCartResponse = check ep->AddToCart(addToCartRequest);
     io:println(addToCartResponse);
+}
 
-    UserId placeOrderRequest = {user_id: userId};
+function placeOrder() returns error? {
+    io:println("Enter user ID: ");
+    string placeOrderUserId = io:readln();
+    UserId placeOrderRequest = {user_id: placeOrderUserId};
+    io:println("Order placed Succesfully");
     OrderResponse placeOrderResponse = check ep->PlaceOrder(placeOrderRequest);
     io:println(placeOrderResponse);
+}
 
-    User createUsersRequest = {user_id: userId, user_type: userId};
+function createUsers() returns error? {
+    io:println("Enter user ID: ");
+    string userId = io:readln();
+    io:println("Enter user type (admin/customer): ");
+    string userType = io:readln();
+
+    if userType != "admin" && userType != "customer" {
+        return error("Invalid user type. Must be 'admin' or 'customer'.");
+    }
+
+    User createUsersRequest = {user_id: userId, user_type: userType};
     CreateUsersStreamingClient createUsersStreamingClient = check ep->CreateUsers();
     check createUsersStreamingClient->sendUser(createUsersRequest);
     check createUsersStreamingClient->complete();
     UserResponse? createUsersResponse = check createUsersStreamingClient->receiveUserResponse();
     io:println(createUsersResponse);
 }
-function addToCart() returns error? {
-io:println(&quot;Enter user ID: &quot;);
-string userId = io:readln();
-io:println(&quot;Enter product SKU to add to cart: &quot;);
-string cartSku = io:readln();
-CartRequest addToCartRequest = {user_id: userId, sku: cartSku};
-CartResponse addToCartResponse = check ep-&gt;AddToCart(addToCartRequest);
-io:println(addToCartResponse);
 
-}
-
-function placeOrder() returns error? {
-io:println(&quot;Enter user ID: &quot;);
-string placeOrderUserId = io:readln();
-UserId placeOrderRequest = {user_id: placeOrderUserId};
-io:println(&quot;Order placed successfully&quot;);
-OrderResponse placeOrderResponse = check ep-&gt;PlaceOrder(placeOrderRequest);
-io:println(placeOrderResponse);
-}
-
-
-function createUsers() returns error?{
-    io:println("Enter user ID: ");
-    string userid=io:readln();
-    io:println("Enter user type (admin/cutomer): ");
-    string usertype=io:readln();
-    User createUsersRequest = {user_id: userid, user_type: usertype};
-    CreateUsersStreamingClient createUsersStreamingClient = check ep->CreateUsers();
-    check createUsersStreamingClient->sendUser(createUsersRequest);
-    check  createUsersStreamingClient->complete();
-    UserRespone? createUserResponse = check  createUsersStreamingClient->receiveUserResponse();
-    io:println(createUserResponse);
-
-
-}
