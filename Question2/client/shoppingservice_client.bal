@@ -151,3 +151,19 @@ io:println(&quot;Order placed successfully&quot;);
 OrderResponse placeOrderResponse = check ep-&gt;PlaceOrder(placeOrderRequest);
 io:println(placeOrderResponse);
 }
+
+
+function createUsers() returns error?{
+    io:println("Enter user ID: ");
+    string userid=io:readln();
+    io:println("Enter user type (admin/cutomer): ");
+    string usertype=io:readln();
+    User createUsersRequest = {user_id: userid, user_type: usertype};
+    CreateUsersStreamingClient createUsersStreamingClient = check ep->CreateUsers();
+    check createUsersStreamingClient->sendUser(createUsersRequest);
+    check  createUsersStreamingClient->complete();
+    UserRespone? createUserResponse = check  createUsersStreamingClient->receiveUserResponse();
+    io:println(createUserResponse);
+
+
+}
