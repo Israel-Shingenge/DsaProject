@@ -101,15 +101,21 @@ function removeProduct() returns error? {
     io:println(removeProductResponse);
 }
 
+    function searchProduct() returns error? {
+    io:println("Enter product SKU to search: ");
+    string searchSku = io:readln();
 
+    ProductId searchProductRequest = {sku: searchSku};
+    ProductResponse searchProductResponse = check ep->SearchProduct(searchProductRequest);
+    io:println(searchProductResponse);
+}
 
+function listAvailableProducts() returns error? {
     Empty listAvailableProductsRequest = {};
     ProductList listAvailableProductsResponse = check ep->ListAvailableProducts(listAvailableProductsRequest);
     io:println(listAvailableProductsResponse);
+}
 
-    ProductId searchProductRequest = {sku: sku};
-    ProductResponse searchProductResponse = check ep->SearchProduct(searchProductRequest);
-    io:println(searchProductResponse);
 
     CartRequest addToCartRequest = {user_id: userId, sku: sku};
     CartResponse addToCartResponse = check ep->AddToCart(addToCartRequest);
