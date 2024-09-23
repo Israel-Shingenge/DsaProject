@@ -42,18 +42,20 @@ service / on ep0 {
     }
 
 
-    # Retrieve programmes by faculty
+  
+# Retrieve programmes by faculty
     #
-    # + facultyName - Name of the faculty.
+    # + faculty - Name of the faculty.
     # + return - A list of programmes belonging to the specified faculty. 
-    resource function get programmes/faculty/[string facultyName]() returns Programme[] {
+    resource function get programmes/faculty/[string faculty]() returns Programme[]|http:NotFound {
+        Programme[] prog = programme.toArray().filter(p => p.faculty == faculty);
+        if prog.length() ==0{
+            return <http:NotFound>{body:"Programme not found in faculty"};
+        }
+        return prog;
     }
 
-    # Retrieve programmes due for review
-    #
-    # + return - A list of programmes due for review. 
-    resource function get programmes/review() returns Programme[] {
-    }
+
 
     # Add a new programme
     #
